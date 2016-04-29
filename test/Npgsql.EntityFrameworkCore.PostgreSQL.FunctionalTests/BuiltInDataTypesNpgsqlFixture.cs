@@ -7,7 +7,7 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.FunctionalTests;
+using Microsoft.EntityFrameworkCore.Specification.Tests;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Npgsql;
@@ -26,7 +26,7 @@ namespace Npgsql.EntityFrameworkCore.PostgreSQL.FunctionalTests
             _testStore = NpgsqlTestStore.CreateScratch();
 
             _testStore.ExecuteNonQuery("CREATE TYPE somecomposite AS (some_number int, some_text text)");
-            NpgsqlConnection.MapCompositeGlobally<SomeComposite>("somecomposite");
+            //NpgsqlConnection.MapCompositeGlobally<SomeComposite>("somecomposite");
             ((NpgsqlConnection)_testStore.Connection).ReloadTypes();
 
             var serviceProvider = new ServiceCollection()

@@ -5,12 +5,11 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore.FunctionalTests.TestUtilities.Xunit;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Relational.Design.FunctionalTests.ReverseEngineering;
-using Microsoft.EntityFrameworkCore.Relational.Design.FunctionalTests.TestUtilities;
+using Microsoft.EntityFrameworkCore.Relational.Design.Specification.Tests.ReverseEngineering;
+using Microsoft.EntityFrameworkCore.Relational.Design.Specification.Tests.TestUtilities;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+using Microsoft.EntityFrameworkCore.Specification.Tests.TestUtilities.Xunit;
 using Npgsql.EntityFrameworkCore.PostgreSQL.FunctionalTests.Utilities;
 
 namespace Npgsql.EntityFrameworkCore.PostgreSQL.Design.FunctionalTests.ReverseEngineering

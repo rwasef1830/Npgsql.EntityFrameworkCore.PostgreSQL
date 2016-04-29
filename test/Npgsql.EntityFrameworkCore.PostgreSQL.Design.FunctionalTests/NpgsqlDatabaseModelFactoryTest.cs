@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore.FunctionalTests.TestUtilities.Xunit;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Scaffolding;

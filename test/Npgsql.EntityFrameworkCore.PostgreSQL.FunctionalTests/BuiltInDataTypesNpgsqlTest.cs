@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.NetworkInformation;
-using Microsoft.EntityFrameworkCore.FunctionalTests;
+using Microsoft.EntityFrameworkCore.Specification.Tests;
 using NpgsqlTypes;
 using Xunit;
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore.FunctionalTests;
-using Microsoft.EntityFrameworkCore.FunctionalTests.TestModels.Northwind;
+using Microsoft.EntityFrameworkCore.Specification.Tests;
+using Microsoft.EntityFrameworkCore.Specification.Tests.TestModels.Northwind;
 using Xunit;
 
 #if NETSTANDARDAPP1_5
@@ -20,11 +20,17 @@ namespace Npgsql.EntityFrameworkCore.PostgreSQL.FunctionalTests
         {
             base.Default_if_empty_top_level();
 
-            Assert.StartsWith(
-                  @"SELECT ""c"".""EmployeeID"", ""c"".""City"", ""c"".""Country"", ""c"".""FirstName"", ""c"".""ReportsTo"", ""c"".""Title""
-FROM ""Employees"" AS ""c""
-WHERE ""c"".""EmployeeID"" = -1",
-                  Sql);
+            Assert.Equal(
+                @"SELECT ""t"".""EmployeeID"", ""t"".""City"", ""t"".""Country"", ""t"".""FirstName"", ""t"".""ReportsTo"", ""t"".""Title""
+FROM (
+    SELECT NULL AS ""empty""
+) AS ""empty0""
+LEFT JOIN (
+    SELECT ""c"".""EmployeeID"", ""c"".""City"", ""c"".""Country"", ""c"".""FirstName"", ""c"".""ReportsTo"", ""c"".""Title""
+    FROM ""Employees"" AS ""c""
+    WHERE ""c"".""EmployeeID"" = -1
+) AS ""t"" ON 1 = 1",
+                Sql);
         }
 
         public override void Where_query_composition()
@@ -137,15 +143,15 @@ FROM ""Orders"" AS ""o""",
             base.Select_Where_Subquery_Deep_Single();
 
             Assert.StartsWith(
-                 @"SELECT ""od"".""OrderID"", ""od"".""ProductID"", ""od"".""Discount"", ""od"".""Quantity"", ""od"".""UnitPrice""
+                @"SELECT ""od"".""OrderID"", ""od"".""ProductID"", ""od"".""Discount"", ""od"".""Quantity"", ""od"".""UnitPrice""
 FROM ""Order Details"" AS ""od""
 
-SELECT ""o"".""OrderID"", ""o"".""CustomerID""
-FROM ""Orders"" AS ""o""
+SELECT ""o0"".""OrderID"", ""o0"".""CustomerID""
+FROM ""Orders"" AS ""o0""
 
-SELECT ""c"".""CustomerID"", ""c"".""City""
-FROM ""Customers"" AS ""c""",
-                 Sql);
+SELECT ""c0"".""CustomerID"", ""c0"".""City""
+FROM ""Customers"" AS ""c0""",
+                Sql);
         }
 
         public override void Select_Where_Subquery_Deep_First()
@@ -153,15 +159,15 @@ FROM ""Customers"" AS ""c""",
             base.Select_Where_Subquery_Deep_First();
 
             Assert.StartsWith(
-                 @"SELECT ""od"".""OrderID"", ""od"".""ProductID"", ""od"".""Discount"", ""od"".""Quantity"", ""od"".""UnitPrice""
+                @"SELECT ""od"".""OrderID"", ""od"".""ProductID"", ""od"".""Discount"", ""od"".""Quantity"", ""od"".""UnitPrice""
 FROM ""Order Details"" AS ""od""
 
-SELECT ""o"".""OrderID"", ""o"".""CustomerID""
-FROM ""Orders"" AS ""o""
+SELECT ""o0"".""OrderID"", ""o0"".""CustomerID""
+FROM ""Orders"" AS ""o0""
 
-SELECT ""c"".""CustomerID"", ""c"".""City""
-FROM ""Customers"" AS ""c""",
-                 Sql);
+SELECT ""c0"".""CustomerID"", ""c0"".""City""
+FROM ""Customers"" AS ""c0""",
+                Sql);
         }
 
         public override void Where_subquery_anon()
@@ -754,7 +760,7 @@ FROM ""Orders"" AS ""o""",
 FROM (
     SELECT DISTINCT ""c"".""CustomerID"", ""c"".""Address"", ""c"".""City"", ""c"".""CompanyName"", ""c"".""ContactName"", ""c"".""ContactTitle"", ""c"".""Country"", ""c"".""Fax"", ""c"".""Phone"", ""c"".""PostalCode"", ""c"".""Region""
     FROM ""Customers"" AS ""c""
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -768,7 +774,7 @@ FROM (
 FROM (
     SELECT DISTINCT ""c"".""City""
     FROM ""Customers"" AS ""c""
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -822,14 +828,14 @@ LIMIT @__p_1 OFFSET @__p_0",
                 @"@__p_0: 10
 @__p_1: 5
 
-SELECT ""t0"".*
+SELECT ""t"".*
 FROM (
     SELECT ""c"".""CustomerID"", ""c"".""Address"", ""c"".""City"", ""c"".""CompanyName"", ""c"".""ContactName"", ""c"".""ContactTitle"", ""c"".""Country"", ""c"".""Fax"", ""c"".""Phone"", ""c"".""PostalCode"", ""c"".""Region""
     FROM ""Customers"" AS ""c""
     ORDER BY ""c"".""ContactName""
     LIMIT @__p_0
-) AS ""t0""
-ORDER BY ""t0"".""ContactName""
+) AS ""t""
+ORDER BY ""t"".""ContactName""
 OFFSET @__p_1",
                 Sql);
         }
@@ -842,18 +848,18 @@ OFFSET @__p_1",
                 @"@__p_0: 10
 @__p_1: 5
 
-SELECT DISTINCT ""t1"".*
+SELECT DISTINCT ""t0"".*
 FROM (
-    SELECT ""t0"".*
+    SELECT ""t"".*
     FROM (
         SELECT ""c"".""CustomerID"", ""c"".""Address"", ""c"".""City"", ""c"".""CompanyName"", ""c"".""ContactName"", ""c"".""ContactTitle"", ""c"".""Country"", ""c"".""Fax"", ""c"".""Phone"", ""c"".""PostalCode"", ""c"".""Region""
         FROM ""Customers"" AS ""c""
         ORDER BY ""c"".""ContactName""
         LIMIT @__p_0
-    ) AS ""t0""
-    ORDER BY ""t0"".""ContactName""
+    ) AS ""t""
+    ORDER BY ""t"".""ContactName""
     OFFSET @__p_1
-) AS ""t1""",
+) AS ""t0""",
                 Sql);
         }
 
@@ -874,7 +880,7 @@ FROM (
     SELECT DISTINCT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
     FROM ""Orders"" AS ""o""
     LIMIT @__p_0
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -891,7 +897,7 @@ FROM (
     FROM ""Orders"" AS ""o""
     WHERE ""o"".""CustomerID"" = 'FRANK'
     LIMIT @__p_0
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -932,12 +938,12 @@ FROM ""Customers"" AS ""c3""",
             Assert.Equal(
                 @"@__p_0: 91
 
-SELECT ""t0"".""City""
+SELECT ""t"".""City""
 FROM (
-    SELECT ""c"".*
-    FROM ""Customers"" AS ""c""
+    SELECT ""c0"".*
+    FROM ""Customers"" AS ""c0""
     LIMIT @__p_0
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -995,7 +1001,7 @@ FROM (
     FROM ""Orders"" AS ""o""
     ORDER BY ""o"".""OrderID""
     LIMIT @__p_0
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -1008,10 +1014,10 @@ FROM (
 
 SELECT COUNT(*)::INT4
 FROM (
-    SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
-    FROM ""Orders"" AS ""o""
+    SELECT ""o0"".""OrderID"", ""o0"".""CustomerID"", ""o0"".""EmployeeID"", ""o0"".""OrderDate""
+    FROM ""Orders"" AS ""o0""
     LIMIT @__p_0
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -1050,10 +1056,10 @@ END",
 
             Assert.Equal(
                 @"SELECT CASE
-    WHEN NOT (EXISTS (
+    WHEN NOT EXISTS (
         SELECT 1
         FROM ""Customers"" AS ""c""
-        WHERE NOT (""c"".""ContactName"" LIKE ('A' || '%'))))
+        WHERE NOT (""c"".""ContactName"" LIKE ('A' || '%')))
     THEN TRUE::bool ELSE FALSE::bool
 END",
                 Sql);
@@ -1126,12 +1132,12 @@ FROM ""Customers"" AS ""c""",
             Assert.Equal(
                 @"@__p_0: 9
 
-SELECT ""t0"".""EmployeeID""
+SELECT ""t"".""EmployeeID""
 FROM (
-    SELECT ""e"".*
-    FROM ""Employees"" AS ""e""
+    SELECT ""e0"".*
+    FROM ""Employees"" AS ""e0""
     LIMIT @__p_0
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -1806,12 +1812,12 @@ FROM ""Customers"" AS ""c""",
             Assert.Equal(
                 @"@__p_0: 9
 
-SELECT ""t0"".""EmployeeID"", ""t0"".""City"", ""t0"".""Country"", ""t0"".""FirstName"", ""t0"".""ReportsTo"", ""t0"".""Title"", ""c"".""CustomerID"", ""c"".""Address"", ""c"".""City"", ""c"".""CompanyName"", ""c"".""ContactName"", ""c"".""ContactTitle"", ""c"".""Country"", ""c"".""Fax"", ""c"".""Phone"", ""c"".""PostalCode"", ""c"".""Region""
+SELECT ""t"".""EmployeeID"", ""t"".""City"", ""t"".""Country"", ""t"".""FirstName"", ""t"".""ReportsTo"", ""t"".""Title"", ""c"".""CustomerID"", ""c"".""Address"", ""c"".""City"", ""c"".""CompanyName"", ""c"".""ContactName"", ""c"".""ContactTitle"", ""c"".""Country"", ""c"".""Fax"", ""c"".""Phone"", ""c"".""PostalCode"", ""c"".""Region""
 FROM (
-    SELECT ""e"".""EmployeeID"", ""e"".""City"", ""e"".""Country"", ""e"".""FirstName"", ""e"".""ReportsTo"", ""e"".""Title""
-    FROM ""Employees"" AS ""e""
+    SELECT ""e0"".""EmployeeID"", ""e0"".""City"", ""e0"".""Country"", ""e0"".""FirstName"", ""e0"".""ReportsTo"", ""e0"".""Title""
+    FROM ""Employees"" AS ""e0""
     LIMIT @__p_0
-) AS ""t0""
+) AS ""t""
 CROSS JOIN ""Customers"" AS ""c""",
                 Sql);
         }
@@ -2027,15 +2033,16 @@ FROM ""Customers"" AS ""c""", Sql);
             Assert.Equal(
                 @"@__p_0: 5
 
-SELECT ""c"".""ContactName"", ""t0"".""OrderID""
+SELECT ""c"".""ContactName"", ""t"".""OrderID""
 FROM ""Customers"" AS ""c""
 INNER JOIN (
-    SELECT ""o2"".*
-    FROM ""Orders"" AS ""o2""
-    ORDER BY ""o2"".""OrderID""
+    SELECT ""o20"".*
+    FROM ""Orders"" AS ""o20""
+    ORDER BY ""o20"".""OrderID""
     LIMIT @__p_0
-) AS ""t0"" ON ""c"".""CustomerID"" = ""t0"".""CustomerID""
-WHERE ""t0"".""CustomerID"" = 'ALFKI'", Sql);
+) AS ""t"" ON ""c"".""CustomerID"" = ""t"".""CustomerID""
+WHERE ""t"".""CustomerID"" = 'ALFKI'",
+                Sql);
         }
 
         public override void Join_customers_orders_with_subquery_anonymous_property_method()
@@ -2088,16 +2095,17 @@ FROM ""Customers"" AS ""c""", Sql);
             Assert.Equal(
                 @"@__p_0: 5
 
-SELECT ""c"".""ContactName"", ""t0"".""OrderID""
+SELECT ""c"".""ContactName"", ""t"".""OrderID""
 FROM ""Customers"" AS ""c""
 INNER JOIN (
-    SELECT ""o2"".*
-    FROM ""Orders"" AS ""o2""
-    WHERE ""o2"".""OrderID"" > 0
-    ORDER BY ""o2"".""OrderID""
+    SELECT ""o20"".*
+    FROM ""Orders"" AS ""o20""
+    WHERE ""o20"".""OrderID"" > 0
+    ORDER BY ""o20"".""OrderID""
     LIMIT @__p_0
-) AS ""t0"" ON ""c"".""CustomerID"" = ""t0"".""CustomerID""
-WHERE ""t0"".""CustomerID"" = 'ALFKI'", Sql);
+) AS ""t"" ON ""c"".""CustomerID"" = ""t"".""CustomerID""
+WHERE ""t"".""CustomerID"" = 'ALFKI'",
+                Sql);
         }
 
         public override void Join_customers_orders_select()
@@ -2260,10 +2268,16 @@ ORDER BY ""e"".""EmployeeID""",
             base.GroupJoin_DefaultIfEmpty3();
 
             Assert.Equal(
-                @"SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
-FROM ""Customers"" AS ""c""
-LEFT JOIN ""Orders"" AS ""o"" ON ""c"".""CustomerID"" = ""o"".""CustomerID""
-ORDER BY ""c"".""CustomerID""",
+                @"@__p_0: 1
+
+SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
+FROM (
+    SELECT ""c0"".*
+    FROM ""Customers"" AS ""c0""
+    LIMIT @__p_0
+) AS ""t""
+LEFT JOIN ""Orders"" AS ""o"" ON ""t"".""CustomerID"" = ""o"".""CustomerID""
+ORDER BY ""t"".""CustomerID""",
                 Sql);
         }
 
@@ -2284,11 +2298,11 @@ ORDER BY ""c"".""CustomerID""",
             base.GroupJoin_simple_ordering();
 
             Assert.Equal(
-     @"SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
+                @"SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
 FROM ""Customers"" AS ""c""
 LEFT JOIN ""Orders"" AS ""o"" ON ""c"".""CustomerID"" = ""o"".""CustomerID""
 ORDER BY ""c"".""City"", ""c"".""CustomerID""",
-     Sql);
+                Sql);
         }
 
         public override void GroupJoin_simple_subquery()
@@ -2298,14 +2312,14 @@ ORDER BY ""c"".""City"", ""c"".""CustomerID""",
             Assert.Equal(
                 @"@__p_0: 4
 
-SELECT ""t0"".""OrderID"", ""t0"".""CustomerID"", ""t0"".""EmployeeID"", ""t0"".""OrderDate""
+SELECT ""t"".""OrderID"", ""t"".""CustomerID"", ""t"".""EmployeeID"", ""t"".""OrderDate""
 FROM ""Customers"" AS ""c""
 LEFT JOIN (
-    SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
-    FROM ""Orders"" AS ""o""
-    ORDER BY ""o"".""OrderID""
+    SELECT ""o0"".""OrderID"", ""o0"".""CustomerID"", ""o0"".""EmployeeID"", ""o0"".""OrderDate""
+    FROM ""Orders"" AS ""o0""
+    ORDER BY ""o0"".""OrderID""
     LIMIT @__p_0
-) AS ""t0"" ON ""c"".""CustomerID"" = ""t0"".""CustomerID""
+) AS ""t"" ON ""c"".""CustomerID"" = ""t"".""CustomerID""
 ORDER BY ""c"".""CustomerID""",
                 Sql);
         }
@@ -2327,11 +2341,19 @@ ORDER BY ""c"".""CustomerID""",
             base.SelectMany_Joined_DefaultIfEmpty();
 
             Assert.StartsWith(
-                @"SELECT ""c"".""CustomerID"", ""c"".""ContactName""
+                @"SELECT ""t1"".""OrderID"", ""t1"".""CustomerID"", ""t1"".""EmployeeID"", ""t1"".""OrderDate"", ""c"".""ContactName""
 FROM ""Customers"" AS ""c""
-
-SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
-FROM ""Orders"" AS ""o""",
+CROSS JOIN LATERAL (
+    SELECT ""t"".""OrderID"", ""t"".""CustomerID"", ""t"".""EmployeeID"", ""t"".""OrderDate""
+    FROM (
+        SELECT NULL AS ""empty""
+    ) AS ""empty0""
+    LEFT JOIN (
+        SELECT ""o0"".""OrderID"", ""o0"".""CustomerID"", ""o0"".""EmployeeID"", ""o0"".""OrderDate""
+        FROM ""Orders"" AS ""o0""
+        WHERE ""o0"".""CustomerID"" = ""c"".""CustomerID""
+    ) AS ""t"" ON 1 = 1
+) AS ""t1""",
                 Sql);
         }
 
@@ -2340,11 +2362,19 @@ FROM ""Orders"" AS ""o""",
             base.SelectMany_Joined_DefaultIfEmpty2();
 
             Assert.StartsWith(
-                @"SELECT ""c"".""CustomerID""
+                @"SELECT ""t1"".""OrderID"", ""t1"".""CustomerID"", ""t1"".""EmployeeID"", ""t1"".""OrderDate""
 FROM ""Customers"" AS ""c""
-
-SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
-FROM ""Orders"" AS ""o""",
+CROSS JOIN LATERAL (
+    SELECT ""t"".""OrderID"", ""t"".""CustomerID"", ""t"".""EmployeeID"", ""t"".""OrderDate""
+    FROM (
+        SELECT NULL AS ""empty""
+    ) AS ""empty0""
+    LEFT JOIN (
+        SELECT ""o0"".""OrderID"", ""o0"".""CustomerID"", ""o0"".""EmployeeID"", ""o0"".""OrderDate""
+        FROM ""Orders"" AS ""o0""
+        WHERE ""o0"".""CustomerID"" = ""c"".""CustomerID""
+    ) AS ""t"" ON 1 = 1
+) AS ""t1""",
                 Sql);
         }
 
@@ -2353,14 +2383,14 @@ FROM ""Orders"" AS ""o""",
             base.SelectMany_Joined_Take();
 
             Assert.Equal(
-                @"SELECT ""c"".""CustomerID"", ""t0"".""OrderID"", ""t0"".""CustomerID"", ""t0"".""EmployeeID"", ""t0"".""OrderDate"", ""c"".""ContactName""
+                @"SELECT ""t"".""OrderID"", ""t"".""CustomerID"", ""t"".""EmployeeID"", ""t"".""OrderDate"", ""c"".""ContactName""
 FROM ""Customers"" AS ""c""
 CROSS JOIN LATERAL (
-    SELECT ""o"".""OrderID"", ""o"".""CustomerID"", ""o"".""EmployeeID"", ""o"".""OrderDate""
-    FROM ""Orders"" AS ""o""
-    WHERE ""o"".""CustomerID"" = ""c"".""CustomerID""
+    SELECT ""o0"".""OrderID"", ""o0"".""CustomerID"", ""o0"".""EmployeeID"", ""o0"".""OrderDate""
+    FROM ""Orders"" AS ""o0""
+    WHERE ""o0"".""CustomerID"" = ""c"".""CustomerID""
     LIMIT 1000
-) AS ""t0""",
+) AS ""t""",
                 Sql);
         }
 
@@ -2500,12 +2530,12 @@ FROM ""Customers"" AS ""c""", // Ordering not preserved by distinct when orderin
             base.Distinct_OrderBy();
 
             Assert.Equal(
-                @"SELECT ""t0"".""Country""
+                @"SELECT ""t"".""Country""
 FROM (
-    SELECT DISTINCT ""c"".""Country""
-    FROM ""Customers"" AS ""c""
-) AS ""t0""
-ORDER BY ""t0"".""Country""",
+    SELECT DISTINCT ""c0"".""Country""
+    FROM ""Customers"" AS ""c0""
+) AS ""t""
+ORDER BY ""t"".""Country""",
                 Sql);
         }
 
@@ -2514,12 +2544,12 @@ ORDER BY ""t0"".""Country""",
             base.Distinct_OrderBy2();
 
             Assert.Equal(
-                @"SELECT ""t0"".""CustomerID"", ""t0"".""Address"", ""t0"".""City"", ""t0"".""CompanyName"", ""t0"".""ContactName"", ""t0"".""ContactTitle"", ""t0"".""Country"", ""t0"".""Fax"", ""t0"".""Phone"", ""t0"".""PostalCode"", ""t0"".""Region""
+                @"SELECT ""t"".""CustomerID"", ""t"".""Address"", ""t"".""City"", ""t"".""CompanyName"", ""t"".""ContactName"", ""t"".""ContactTitle"", ""t"".""Country"", ""t"".""Fax"", ""t"".""Phone"", ""t"".""PostalCode"", ""t"".""Region""
 FROM (
-    SELECT DISTINCT ""c"".""CustomerID"", ""c"".""Address"", ""c"".""City"", ""c"".""CompanyName"", ""c"".""ContactName"", ""c"".""ContactTitle"", ""c"".""Country"", ""c"".""Fax"", ""c"".""Phone"", ""c"".""PostalCode"", ""c"".""Region""
-    FROM ""Customers"" AS ""c""
-) AS ""t0""
-ORDER BY ""t0"".""CustomerID""",
+    SELECT DISTINCT ""c0"".""CustomerID"", ""c0"".""Address"", ""c0"".""City"", ""c0"".""CompanyName"", ""c0"".""ContactName"", ""c0"".""ContactTitle"", ""c0"".""Country"", ""c0"".""Fax"", ""c0"".""Phone"", ""c0"".""PostalCode"", ""c0"".""Region""
+    FROM ""Customers"" AS ""c0""
+) AS ""t""
+ORDER BY ""t"".""CustomerID""",
                 Sql);
         }
 
@@ -2528,12 +2558,12 @@ ORDER BY ""t0"".""CustomerID""",
             base.Distinct_OrderBy3();
 
             Assert.Equal(
-                @"SELECT ""t0"".""CustomerID""
+                @"SELECT ""t"".""CustomerID""
 FROM (
-    SELECT DISTINCT ""c"".""CustomerID""
-    FROM ""Customers"" AS ""c""
-) AS ""t0""
-ORDER BY ""t0"".""CustomerID""",
+    SELECT DISTINCT ""c0"".""CustomerID""
+    FROM ""Customers"" AS ""c0""
+) AS ""t""
+ORDER BY ""t"".""CustomerID""",
                 Sql);
         }
 
@@ -3972,6 +4002,58 @@ WHERE 1 = 1",
                 Sql);
         }
 
+        public override void Contains_top_level()
+        {
+            base.Contains_top_level();
+
+            Assert.Equal(
+                @"@__p_0: ALFKI
+
+SELECT CASE
+    WHEN @__p_0 IN (
+        SELECT ""c"".""CustomerID""
+        FROM ""Customers"" AS ""c""
+    )
+    THEN true::bool ELSE false::bool
+END",
+                Sql);
+        }
+
+        public override void Substring_with_constant()
+        {
+            base.Substring_with_constant();
+
+            Assert.Equal(
+                @"SELECT SUBSTRING(""c"".""ContactName"", 2, 3)
+FROM ""Customers"" AS ""c""
+LIMIT 1",
+                Sql);
+        }
+
+        public override void Substring_with_closure()
+        {
+            base.Substring_with_closure();
+
+            Assert.Equal(
+                @"@__start_0: 2
+
+SELECT SUBSTRING(""c"".""ContactName"", @__start_0 + 1, 3)
+FROM ""Customers"" AS ""c""
+LIMIT 1",
+                Sql);
+        }
+
+        public override void Substring_with_client_eval()
+        {
+            base.Substring_with_client_eval();
+
+            Assert.Equal(
+                @"SELECT ""c"".""ContactName""
+FROM ""Customers"" AS ""c""
+LIMIT 1",
+                Sql);
+        }
+
         public override void Projection_null_coalesce_operator()
         {
             base.Projection_null_coalesce_operator();
@@ -4000,18 +4082,19 @@ WHERE COALESCE(""c"".""CompanyName"", ""c"".""ContactName"") = 'The Big Cheese'"
             Assert.Equal(@"@__p_0: 10
 @__p_1: 5
 
-SELECT DISTINCT ""t1"".*
+SELECT DISTINCT ""t0"".*
 FROM (
-    SELECT ""t0"".*
+    SELECT ""t"".*
     FROM (
         SELECT ""c"".""CustomerID"", ""c"".""Address"", ""c"".""City"", ""c"".""CompanyName"", ""c"".""ContactName"", ""c"".""ContactTitle"", ""c"".""Country"", ""c"".""Fax"", ""c"".""Phone"", ""c"".""PostalCode"", ""c"".""Region""
         FROM ""Customers"" AS ""c""
         ORDER BY COALESCE(""c"".""Region"", 'ZZ')
         LIMIT @__p_0
-    ) AS ""t0""
-    ORDER BY COALESCE(""t0"".""Region"", 'ZZ')
+    ) AS ""t""
+    ORDER BY COALESCE(""t"".""Region"", 'ZZ')
     OFFSET @__p_1
-) AS ""t1""", Sql);
+) AS ""t0""",
+                Sql);
         }
 
         public override void Select_take_null_coalesce_operator()
@@ -4034,16 +4117,16 @@ LIMIT @__p_0", Sql);
                 @"@__p_0: 10
 @__p_1: 5
 
-SELECT ""t0"".*
+SELECT ""t"".*
 FROM (
     SELECT ""c"".""CustomerID"", ""c"".""CompanyName"", COALESCE(""c"".""Region"", 'ZZ') AS ""Coalesce""
     FROM ""Customers"" AS ""c""
     ORDER BY ""Coalesce""
     LIMIT @__p_0
-) AS ""t0""
+) AS ""t""
 ORDER BY ""Coalesce""
 OFFSET @__p_1",
-            Sql);
+                Sql);
         }
 
         public override void Selected_column_can_coalesce()
@@ -4057,7 +4140,7 @@ ORDER BY COALESCE(""c"".""Region"", 'ZZ')",
                 Sql);
         }
 
-#region Regular Expressions
+        #region Regular Expressions
 
         [Fact]
         public void Regex_IsMatch()
@@ -4122,7 +4205,7 @@ ORDER BY COALESCE(""c"".""Region"", 'ZZ')",
             Assert.DoesNotContain("WHERE \"c\".\"CompanyName\" ~ ", Sql);
         }
 
-#endregion
+        #endregion
 
         static string Sql => TestSqlLoggerFactory.Sql;
     }
