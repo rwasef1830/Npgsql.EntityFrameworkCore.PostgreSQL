@@ -30,6 +30,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -111,7 +112,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<NpgsqlQueryCompilationContextFactory>()
                 .AddScoped<NpgsqlCompositeMemberTranslator>()
                 .AddScoped<NpgsqlCompositeMethodCallTranslator>()
-                .AddScoped<NpgsqlQuerySqlGeneratorFactory>();
+                .AddScoped<NpgsqlQuerySqlGeneratorFactory>()
+                .AddScoped<NpgsqlSqlTranslatingExpressionVisitorFactory>();
         }
     }
 }

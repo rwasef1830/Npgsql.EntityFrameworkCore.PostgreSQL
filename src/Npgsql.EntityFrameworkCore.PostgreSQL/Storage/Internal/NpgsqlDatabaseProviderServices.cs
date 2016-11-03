@@ -35,6 +35,7 @@ using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
+using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Query.Sql;
 using Microsoft.EntityFrameworkCore.Query.Sql.Internal;
@@ -53,6 +54,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
         }
 
         public override string InvariantName => GetType().GetTypeInfo().Assembly.GetName().Name;
+        public override ISqlTranslatingExpressionVisitorFactory SqlTranslatingExpressionVisitorFactory => GetService<NpgsqlSqlTranslatingExpressionVisitorFactory>();
         public override IDatabaseCreator Creator => GetService<NpgsqlDatabaseCreator>();
         public override IRelationalConnection RelationalConnection => GetService<NpgsqlRelationalConnection>();
         public override ISqlGenerationHelper SqlGenerationHelper => GetService<NpgsqlSqlGenerationHelper>();

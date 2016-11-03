@@ -41,6 +41,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionTranslators.Internal
             new NpgsqlStringToLowerTranslator(),
             new NpgsqlStringToUpperTranslator(),
             new NpgsqlRegexIsMatchTranslator(),
+            new NpgsqlArraySequenceEqualTranslator()
         };
 
         public NpgsqlCompositeMethodCallTranslator([NotNull] ILogger<NpgsqlCompositeMethodCallTranslator> logger)
