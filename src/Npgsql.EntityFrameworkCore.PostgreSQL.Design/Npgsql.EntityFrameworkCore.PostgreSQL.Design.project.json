@@ -1,12 +1,12 @@
 ﻿{
   "dependencies" : {
-    "Microsoft.EntityFrameworkCore": "1.1.0-*",
+    "Microsoft.EntityFrameworkCore": "1.2.0-*",
     "Microsoft.EntityFrameworkCore.Design": "1.0.0-preview3-*",
-    "Microsoft.EntityFrameworkCore.Relational": "1.1.0-*",
-    "Microsoft.EntityFrameworkCore.Relational.Design": "1.1.0-*",
+    "Microsoft.EntityFrameworkCore.Relational": "1.2.0-*",
+    "Microsoft.EntityFrameworkCore.Relational.Design": "1.2.0-*",
     "Microsoft.Extensions.DependencyInjection": "1.1.0-*",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-*",
-    "Npgsql": "3.1.5"
+    "Npgsql": "3.1.8"
   },
   "frameworks": {
     "net451": {}
