@@ -20,6 +20,31 @@ namespace Npgsql.EntityFrameworkCore.PostgreSQL.Tests.Migrations
         protected virtual string Sql { get; set; }
 
         [Fact]
+        public virtual void CreateIndexOperation_with_filter_where_clause()
+            => Generate(
+                modelBuilder => modelBuilder.Entity("People").Property<string>("Name").IsRequired(),
+                new CreateIndexOperation
+                {
+                    Name = "IX_People_Name",
+                    Table = "People",
+                    Columns = new[] { "Name" },
+                    Filter = @"""Name"" IS NOT NULL"
+                });
+ 
+        [Fact]
+        public virtual void CreateIndexOperation_with_filter_where_clause_and_is_unique()
+            => Generate(
+                modelBuilder => modelBuilder.Entity("People").Property<string>("Name").IsRequired(),
+                new CreateIndexOperation
+                {
+                    Name = "IX_People_Name",
+                    Table = "People",
+                    Columns = new[] { "Name" },
+                    IsUnique = true,
+                    Filter = @"""Name"" IS NOT NULL AND <> ''"
+                });
+
+        [Fact]
         public virtual void AddColumnOperation_with_defaultValue()
         {
             Generate(
@@ -264,6 +289,18 @@ namespace Npgsql.EntityFrameworkCore.PostgreSQL.Tests.Migrations
                 });
         }
 
+        [Fact]
+        public virtual void CreateIndexOperation_with_where_clauses()
+            => Generate(
+                new CreateIndexOperation
+                {
+                    Name = "IX_People_Name",
+                    Table = "People",
+                    Columns = new[] { "Name" },
+                    IsUnique = false,
+                    Filter = @"""Id"" > 2"
+                });
+ 
         [Fact]
         public virtual void CreateSequenceOperation_with_minValue_and_maxValue()
         {

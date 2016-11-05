@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Npgsql.EntityFrameworkCore.PostgreSQL.Tests.Migrations
 {
-    public class MigrationSqlGeneratorTest : MigrationSqlGeneratorTestBase
+    public class NpgsqlMigrationSqlGeneratorTest : MigrationSqlGeneratorTestBase
     {
         protected override IMigrationsSqlGenerator SqlGenerator
         {
@@ -35,7 +35,27 @@ namespace Npgsql.EntityFrameworkCore.PostgreSQL.Tests.Migrations
             }
         }
 
-        public override void AddColumnOperation_with_defaultValue()
+        [Fact]
+        public override void CreateIndexOperation_with_filter_where_clause()
+        {
+            base.CreateIndexOperation_with_filter_where_clause();
+
+            Assert.Equal(
+                @"CREATE INDEX ""IX_People_Name"" ON ""People"" (""Name"") WHERE ""Name"" IS NOT NULL;" + EOL,
+                Sql);
+        }
+
+        [Fact]
+        public override void CreateIndexOperation_with_filter_where_clause_and_is_unique()
+        {
+            base.CreateIndexOperation_with_filter_where_clause_and_is_unique();
+
+            Assert.Equal(
+                @"CREATE UNIQUE INDEX ""IX_People_Name"" ON ""People"" (""Name"") WHERE ""Name"" IS NOT NULL AND <> '';" + EOL,
+                Sql);
+        }
+
+public override void AddColumnOperation_with_defaultValue()
         {
             base.AddColumnOperation_with_defaultValue();
 

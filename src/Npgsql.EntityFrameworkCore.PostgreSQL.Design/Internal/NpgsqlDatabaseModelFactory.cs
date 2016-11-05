@@ -274,7 +274,8 @@ ORDER BY attnum";
         const string GetIndexesQuery = @"
 SELECT
     nspname, cls.relname, idxcls.relname, indisunique, indkey,
-    CASE WHEN indexprs IS NULL THEN NULL ELSE pg_get_expr(indexprs, cls.oid) END
+    CASE WHEN indexprs IS NULL THEN NULL ELSE pg_get_expr(indexprs, cls.oid) END,
+    CASE WHEN indpred IS NULL THEN NULL ELSE pg_get_expr(indpred, cls.oid) END
 FROM pg_class AS cls
 JOIN pg_namespace AS ns ON ns.oid = cls.relnamespace
 JOIN pg_index AS idx ON indrelid = cls.oid
@@ -298,6 +299,10 @@ WHERE
                     var schemaName = reader.GetString(0);
                     var tableName = reader.GetString(1);
                     var indexName = reader.GetString(2);
+                    var isUnique = reader.GetBoolean(3);
+                    var columnIndices = reader.GetFieldValue<short[]>(4);
+                    var indexExpression = reader.IsDBNull(5) ? null : reader.GetString(5);
+                    var filter = reader.IsDBNull(6) ? null : reader.GetString(6);
 
                     if (!_tableSelectionSet.Allows(schemaName, tableName))
                         continue;
@@ -310,15 +315,15 @@ WHERE
                     {
                         Table = table,
                         Name = indexName,
-                        IsUnique = reader.GetBoolean(3)
+                        IsUnique = isUnique,
+                        Filter = filter
                     };
 
                     table.Indexes.Add(index);
 
-                    var columnIndices = reader.GetFieldValue<short[]>(4);
                     if (columnIndices.Any(i => i == 0))
                     {
-                        if (reader.IsDBNull(5))
+                        if (indexExpression == null)
                             throw new Exception($"Seen 0 in indkey for index {indexName} but indexprs is null");
                         index.Npgsql().Expression = reader.GetString(5);
                     }
